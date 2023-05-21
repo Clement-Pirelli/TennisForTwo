@@ -62,7 +62,7 @@ namespace params
 	constexpr float maxAngle = .333f * 3.14f;
 	constexpr float startingAngle = .12f * 3.14f;
 
-	constexpr float strengthIncreaseRate = 2.0f;
+	constexpr float strengthIncreaseRate = .01f;
 	constexpr float minStrength = .8f;
 	constexpr float maxStrength = 5.0f;
 

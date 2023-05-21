@@ -44,11 +44,11 @@ void audioCallback(void*, Uint8* stream, int len)
 				return gameCopy.getBallPosition();
 			case 3:
 			{
-				drawPlayerInput(LeftPlayer, sample, loopedTime);
+				return drawPlayerInput(LeftPlayer, sample, loopedTime);
 			}
 			case 4:
 			{
-				drawPlayerInput(RightPlayer, sample, loopedTime);
+				return drawPlayerInput(RightPlayer, sample, loopedTime);
 			}
 			default:
 				return vec2{};

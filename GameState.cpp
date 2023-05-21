@@ -197,6 +197,7 @@ void Game::handleKeyUp(SDL_Scancode scancode)
 	},
 	[&, scancode](PlayingState)
 	{
+		//todo, check if it's first hit && bounce >= 1, otherwise foul
 		const bool rightPlayerHitting = scancode == params::playerParams[RightPlayer].hit && ballVelocity.x() > .0f && ballPosition.x() > .0f;
 		const bool leftPlayerHitting = scancode == params::playerParams[LeftPlayer].hit && ballVelocity.x() < .0f && ballPosition.x() < .0f;
 		if (rightPlayerHitting || leftPlayerHitting)
@@ -297,7 +298,7 @@ void PlayerState::incrementAngle(float deltaTime)
 {
 	const int angleIncrement = (angleIncreasing ? 1 : 0) + (angleDecreasing ? -1 : 0);
 	const float change = static_cast<float>(angleIncrement) * deltaTime * params::angleIncreaseRate;
-	angle = std::min(angle + change, params::maxAngle - params::minAngle);
+	angle = std::max(std::min(angle + change, params::maxAngle - params::minAngle), params::minAngle);
 }
 
 void PlayerState::increaseStrength(float deltaTime)
@@ -306,5 +307,9 @@ void PlayerState::increaseStrength(float deltaTime)
 	{
 		const float change = strength + deltaTime * params::strengthIncreaseRate;
 		strength = std::min(change, params::maxStrength - params::minStrength);
+	}
+	else
+	{
+		strength = .0f;
 	}
 }
