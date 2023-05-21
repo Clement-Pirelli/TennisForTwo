@@ -15,6 +15,14 @@ enum class Axis : bool
 	Y
 };
 
+enum Player 
+{
+	RightPlayer,
+	LeftPlayer
+};
+
+constexpr Player otherPlayer(Player p) { return p == RightPlayer ? LeftPlayer : RightPlayer; }
+
 struct Line
 {
 	vec2 start;

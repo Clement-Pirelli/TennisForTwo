@@ -230,7 +230,7 @@ struct vec
 		return vec<T, 3>(x() * cosf(angle) - y() * sinf(angle), x() * sinf(angle) + y() * cosf(angle), z());
 	};
 
-	static constexpr vec<T, 3> reflect(const vec<T, 3>& incident, const vec<T, 3>& normal) requires (N == 3)
+	static constexpr vec<T, N> reflect(const vec<T, N>& incident, const vec<T, N>& normal) requires (N == 3 || N == 2)
 	{
 		return incident - (normal * dot(incident, normal) * T { 2 });
 	};

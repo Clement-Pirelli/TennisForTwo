@@ -5,31 +5,51 @@
 #include "Timer.h"
 #include "GameState.h"
 
+std::atomic<unsigned long long> audioTick = 0;
 
-void audioCallback(void* userData, Uint8* stream, int len)
+//audio thread only ever loads, input/simulation thread loads then stores
+std::atomic<Game> game;
+
+void audioCallback(void*, Uint8* stream, int len)
 {
-	GameState& state = *static_cast<GameState*>(userData);
-	const Channels chans = state.channels.load();
+	const Game gameCopy = game.load();
+	const Channels chans = gameCopy.channels;
 
 	float* floatStream = reinterpret_cast<float*>(stream);
 	const int floatLen = len / 4;
 
-	unsigned long long currentTick = state.audioTick.fetch_add(1) % frequency;
+	unsigned long long currentTick = audioTick.fetch_add(1) % frequency;
+
+	auto drawPlayerInput = [&](Player p, float sample, float loopedTime)
+	{
+		const vec2 input = gameCopy.getPlayerInput(p) * params::inputUILengthFactor;
+		const vec2 inputPos = params::playerParams[p].inputUIPos;
+		return Line(inputPos, inputPos + input).draw(sample, loopedTime);
+	};
 
 	for(int i = 0; i < floatLen; i+=2)
 	{
 		const float sample = static_cast<float>(i) / static_cast<float>(floatLen);
 		const float loopedTime = static_cast<float>(currentTick) / static_cast<float>(frequency);
 
+		//todo, make this more extendable? Maybe no need
 		const vec2 drawn = [&] {
-			switch(currentTick % 3)
+			switch(currentTick % 5)
 			{
 			case 0:
 				return params::tennisFloor.draw(sample, loopedTime);
 			case 1:
 				return params::tennisNet.draw(sample, loopedTime);
 			case 2:
-				return state.ballPosition.load();
+				return gameCopy.getBallPosition();
+			case 3:
+			{
+				drawPlayerInput(LeftPlayer, sample, loopedTime);
+			}
+			case 4:
+			{
+				drawPlayerInput(RightPlayer, sample, loopedTime);
+			}
 			default:
 				return vec2{};
 			}
@@ -56,9 +76,7 @@ int main(int, char**)
 		SDL_DestroyWindow(window);
 	};
 
-	GameState state;
-
-	const auto [deviceId, spec] = utils::OpenAudioDevice(&audioCallback, &state);
+	const auto [deviceId, spec] = utils::OpenAudioDevice(&audioCallback);
 	ENSURE(deviceId != 0, "Audio device opened!", "Audio Device failed to open!");
 	DEFER
 	{
@@ -72,8 +90,9 @@ int main(int, char**)
 
 	do
 	{
+		Game gameCopy = game.load();
 		const Time currentTime = Time::now();
-		const Time dt = currentTime - previousTime;
+		float deltaTime = static_cast<float>((currentTime - previousTime).asMilliseconds());
 
 		while(SDL_PollEvent(&sdlEvent) != 0)
 		{
@@ -83,17 +102,20 @@ int main(int, char**)
 				return 0;
 			case SDL_EventType::SDL_KEYDOWN:
 			{
-				if(!state.handleKeyDown(sdlEvent.key.keysym.scancode))
+				if(!gameCopy.handleKeyDown(sdlEvent.key.keysym.scancode))
 				{
 					return 0;
 				}
 			} break;
+			case SDL_EventType::SDL_KEYUP:
+			{
+				gameCopy.handleKeyUp(sdlEvent.key.keysym.scancode);
+			}
 			}
 		}
-
-		const float deltaTime = static_cast<float>(dt.asMilliseconds());
 		
-		state.updateBall(deltaTime);
+		gameCopy.update(deltaTime);
+		game.store(gameCopy);
 
 		previousTime = currentTime;
 

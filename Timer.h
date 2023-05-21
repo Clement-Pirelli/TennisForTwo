@@ -3,7 +3,6 @@
 class Time
 {
 public:
-
 	[[nodiscard]]
 	static Time now();
 
@@ -22,7 +21,7 @@ public:
 
 private:
 
-	Time(unsigned long long givenTicks) : ticks(givenTicks) {}
+	constexpr Time(unsigned long long givenTicks) : ticks(givenTicks) {}
 
 	unsigned long long ticks;
 };

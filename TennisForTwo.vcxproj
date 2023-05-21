@@ -219,6 +219,7 @@
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Collisions.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="rand.cpp" />
@@ -226,6 +227,7 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Collisions.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="params.h" />
     <ClInclude Include="rand.h" />

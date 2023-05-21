@@ -23,7 +23,7 @@ namespace utils
 		SDL_AudioSpec spec;
 	};
 
-	AudioDevice OpenAudioDevice(void (*audioCallback)(void*, Uint8*, int), void* userData)
+	AudioDevice OpenAudioDevice(void (*audioCallback)(void*, Uint8*, int))
 	{
 		SDL_AudioSpec audioSpec{};
 
@@ -33,8 +33,7 @@ namespace utils
 			.format = AUDIO_F32,
 			.channels = 2,
 			.samples = samples,
-			.callback = audioCallback,
-			.userdata = userData
+			.callback = audioCallback
 		};
 
 		const SDL_AudioDeviceID deviceId = SDL_OpenAudioDevice(nullptr, 0, &want, &audioSpec, 0);
