@@ -38,15 +38,13 @@ namespace
 	[[nodiscard]]
 	std::optional<Player> getPlayerLost(vec2 position, PlayingState state)
 	{
-		const bool outsideBounds = outsideRange(position.x(), params::bounds.bottomLeft.x(), params::bounds.topRight.x());
-
 		//only one bounce allowed
 		if (state.bounces > 1)
 		{
 			return position.x() < 0.0f ? LeftPlayer : RightPlayer;
 		}
 		//serving outside of bounds gives a point to the receiving side
-		else if (outsideBounds)
+		else if (outsideRange(position.x(), params::bounds.bottomLeft.x(), params::bounds.topRight.x()))
 		{
 			return position.x() < 0.0f ? RightPlayer : LeftPlayer;
 		}
@@ -222,7 +220,7 @@ void Game::handleKeyUp(SDL_Scancode scancode)
 vec2 Game::getPlayerInput(Player p) const
 {
 	const PlayerState& state = players[p];
-	const float mirror = (p == LeftPlayer) ? -1.0f : 1.0f;
+	const float mirror = (p == LeftPlayer) ? 1.0f : -1.0f;
 	const float angle = state.angle + params::minAngle;
 	const float strength = state.strength + params::minStrength;
 	return vec2{ mirror * cosf(angle), sinf(angle) } * strength;

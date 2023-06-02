@@ -34,19 +34,10 @@ namespace params
 		SDL_Scancode up;
 		SDL_Scancode down;
 		SDL_Scancode hit;
-		
 	};
 
 	constexpr std::array<PlayerParams, 2> playerParams =
 	{
-		PlayerParams
-		{
-			.spawnPosition = { -100.0f, 40.f },
-			.inputUIPos = tennisFloor.start - vec2(.0f, 25.0f),
-			.up = SDL_SCANCODE_W,
-			.down = SDL_SCANCODE_S,
-			.hit = SDL_SCANCODE_D
-		},
 		PlayerParams
 		{
 			.spawnPosition = { 100.0f, 40.0f },
@@ -54,6 +45,14 @@ namespace params
 			.up = SDL_SCANCODE_UP,
 			.down = SDL_SCANCODE_DOWN,
 			.hit = SDL_SCANCODE_LEFT
+		},
+		PlayerParams
+		{
+			.spawnPosition = { -100.0f, 40.f },
+			.inputUIPos = tennisFloor.start - vec2(.0f, 25.0f),
+			.up = SDL_SCANCODE_W,
+			.down = SDL_SCANCODE_S,
+			.hit = SDL_SCANCODE_D
 		}
 	};
 
