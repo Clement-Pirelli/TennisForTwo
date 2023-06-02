@@ -193,19 +193,22 @@ void Game::handleKeyUp(SDL_Scancode scancode)
 			newState = PlayingState{};
 		}
 	},
-	[&, scancode](PlayingState)
+	[&, scancode](PlayingState& state)
 	{
-		//todo, check if it's first hit && bounce >= 1, otherwise foul
 		const bool rightPlayerHitting = scancode == params::playerParams[RightPlayer].hit && ballVelocity.x() > .0f && ballPosition.x() > .0f;
 		const bool leftPlayerHitting = scancode == params::playerParams[LeftPlayer].hit && ballVelocity.x() < .0f && ballPosition.x() < .0f;
 		if (rightPlayerHitting || leftPlayerHitting)
 		{
 			const Player playerHitting = leftPlayerHitting ? LeftPlayer : RightPlayer;
-			//handle hitting the ball after it hits the net, big nono
-			if (!onBallHit(playerHitting))
+			const bool hitBeforeFirstBounce = !state.firstHitHappened && state.bounces == 0;
+			if (hitBeforeFirstBounce || !onBallHit(playerHitting))
 			{
 				const Player scoringPlayer = otherPlayer(playerHitting);
 				newState = onScore(scoringPlayer, ScoreKind::Foul);
+			}
+			else
+			{
+				state.firstHitHappened = true;
 			}
 		}
 	},
