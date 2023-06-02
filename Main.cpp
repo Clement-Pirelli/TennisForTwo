@@ -20,35 +20,33 @@ void audioCallback(void*, Uint8* stream, int len)
 
 	unsigned long long currentTick = audioTick.fetch_add(1) % frequency;
 
-	auto drawPlayerInput = [&](Player p, float sample, float loopedTime)
+	auto drawPlayerInput = [&](Player p, float sample)
 	{
 		const vec2 input = gameCopy.getPlayerInput(p) * params::inputUILengthFactor;
 		const vec2 inputPos = params::playerParams[p].inputUIPos;
-		return Line(inputPos, inputPos + input).draw(sample, loopedTime);
+		return Line(inputPos, inputPos + input).draw(sample);
 	};
 
 	for(int i = 0; i < floatLen; i+=2)
 	{
 		const float sample = static_cast<float>(i) / static_cast<float>(floatLen);
-		const float loopedTime = static_cast<float>(currentTick) / static_cast<float>(frequency);
-
-		//todo, make this more extendable? Maybe no need
+		
 		const vec2 drawn = [&] {
 			switch(currentTick % 5)
 			{
 			case 0:
-				return params::tennisFloor.draw(sample, loopedTime);
+				return params::tennisFloor.draw(sample);
 			case 1:
-				return params::tennisNet.draw(sample, loopedTime);
+				return params::tennisNet.draw(sample);
 			case 2:
 				return gameCopy.getBallPosition();
 			case 3:
 			{
-				return drawPlayerInput(LeftPlayer, sample, loopedTime);
+				return drawPlayerInput(LeftPlayer, sample);
 			}
 			case 4:
 			{
-				return drawPlayerInput(RightPlayer, sample, loopedTime);
+				return drawPlayerInput(RightPlayer, sample);
 			}
 			default:
 				return vec2{};

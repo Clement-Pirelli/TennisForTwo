@@ -28,10 +28,9 @@ struct Line
 	vec2 start;
 	vec2 end;
 
-	vec2 draw(float loopedTime, float sample) const
+	vec2 draw(float sample) const
 	{
-		const float interpolator = loopedTime + sample;
-		return vec2::lerp(start, end, interpolator);
+		return vec2::lerp(start, end, sample);
 	}
 };
 
