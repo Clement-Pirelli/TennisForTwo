@@ -42,7 +42,6 @@ struct ServingState
 struct PlayingState
 {
 	unsigned int bounces = 0;
-	bool firstHitHappened = false;
 };
 
 struct WaitingForStart {};

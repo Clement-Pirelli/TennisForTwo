@@ -130,7 +130,7 @@ void Game::update(float deltaTime)
 			ballPosition = newPosition.clampedBy(params::bounds.bottomLeft, params::bounds.topRight);
 		}, 
 		[&](WaitingForStart) { 
-			ballPosition = {};
+			ballPosition = params::tennisNet.start;
 			ballVelocity = {};
 		}
 		}, gameState);
@@ -193,22 +193,18 @@ void Game::handleKeyUp(SDL_Scancode scancode)
 			newState = PlayingState{};
 		}
 	},
-	[&, scancode](PlayingState& state)
+	[&, scancode](const PlayingState state)
 	{
 		const bool rightPlayerHitting = scancode == params::playerParams[RightPlayer].hit && ballVelocity.x() > .0f && ballPosition.x() > .0f;
 		const bool leftPlayerHitting = scancode == params::playerParams[LeftPlayer].hit && ballVelocity.x() < .0f && ballPosition.x() < .0f;
 		if (rightPlayerHitting || leftPlayerHitting)
 		{
 			const Player playerHitting = leftPlayerHitting ? LeftPlayer : RightPlayer;
-			const bool hitBeforeFirstBounce = !state.firstHitHappened && state.bounces == 0;
+			const bool hitBeforeFirstBounce = state.bounces == 0;
 			if (hitBeforeFirstBounce || !onBallHit(playerHitting))
 			{
 				const Player scoringPlayer = otherPlayer(playerHitting);
 				newState = onScore(scoringPlayer, ScoreKind::Foul);
-			}
-			else
-			{
-				state.firstHitHappened = true;
 			}
 		}
 	},
