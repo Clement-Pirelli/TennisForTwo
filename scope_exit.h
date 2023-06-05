@@ -9,7 +9,9 @@ namespace details
 template<typename Callable_t>
 struct scope_exit 
 {
-	scope_exit(Callable_t&& t) : callable(std::forward<Callable_t>(t)) {}
+	scope_exit() = delete;
+	scope_exit(const Callable_t& t) : callable(t) {}
+	scope_exit(Callable_t&& t) : callable(std::move(t)) {}
 	~scope_exit() { callable(); }
 
 	Callable_t callable;
